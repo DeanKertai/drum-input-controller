@@ -12,11 +12,13 @@ class TriggerInput {
     unsigned long scanModeDuration; ///< Microsends
     unsigned long rampModeDuration; ///< Microsends
 
+    unsigned long modeStartTime; ///< Timestamp from micros()
     int maxScanModeValue;
 
     void setIdle();
     void startScanMode();
     void startRampMode();
+    void emitHit();
     void handleIdleMode(int rawInputValue);
     void handleScanMode(int rawInputValue);
     void handleRampMode(int rawInputValue);

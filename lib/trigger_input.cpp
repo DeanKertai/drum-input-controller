@@ -10,10 +10,12 @@ TriggerInput::TriggerInput(int inputPin) {
     this->scanModeDuration = 50000;
     this->rampModeDuration = 200000;
     this->maxScanModeValue = 0;
+    this->modeStartTime = 0;
 }
 
 void TriggerInput::runChecks() {
     int rawInputValue = analogRead(this->inputPin);
+
     switch (this->mode) {
     case TriggerMode::Idle:
         this->handleIdleMode(rawInputValue);
@@ -29,11 +31,9 @@ void TriggerInput::runChecks() {
     }
 }
 
-void TriggerInput::setIdle() { this->mode = TriggerMode::Idle; }
-
-void TriggerInput::startScanMode() {
-    this->mode = TriggerMode::Scan;
-    this->maxScanModeValue = 0;
+void TriggerInput::setIdle() {
+    this->modeStartTime = micros();
+    this->mode = TriggerMode::Idle;
 }
 
 void TriggerInput::handleIdleMode(int rawInputValue) {
@@ -42,9 +42,51 @@ void TriggerInput::handleIdleMode(int rawInputValue) {
     }
 }
 
-void TriggerInput::handleScanMode(int rawInputValue) {}
+void TriggerInput::startScanMode() {
+    this->mode = TriggerMode::Scan;
+    this->modeStartTime = micros();
+    this->maxScanModeValue = 0;
+}
 
-void TriggerInput::handleRampMode(int rawInputValue) {}
+void TriggerInput::handleScanMode(int rawInputValue) {
+    if (micros() - this->modeStartTime >= this->scanModeDuration) {
+        this->emitHit();
+        this->startRampMode();
+        return;
+    }
+    if (rawInputValue > this->maxScanModeValue) {
+        this->maxScanModeValue = rawInputValue;
+    }
+}
+
+void TriggerInput::emitHit() {
+    // TODO: Send hit to Raspberry Pi
+}
+
+void TriggerInput::startRampMode() {
+    if (this->rampModeDuration == 0) {
+        this->setIdle();
+        return;
+    }
+    this->modeStartTime = micros();
+    this->mode = TriggerMode::Ramp;
+}
+
+void TriggerInput::handleRampMode(int rawInputValue) {
+    unsigned long timeSinceStart = micros() - this->modeStartTime;
+    if (timeSinceStart >= this->rampModeDuration) {
+        this->setIdle();
+        return;
+    }
+    float percentComplete = (float)timeSinceStart / (float)this->rampModeDuration;
+    float rampHeight = (float)(this->maxScanModeValue - this->threshold);
+    int dynamicThreshold = this->maxScanModeValue - (int)(rampHeight * percentComplete);
+
+    // Allow new hits if input value exceeds the dynamic ramp threshold
+    if (rawInputValue >= dynamicThreshold) {
+        this->startScanMode();
+    }
+}
 
 bool TriggerInput::setThreshold(int threshold) {
     if (threshold < 0 || threshold > Config::MAX_INPUT_VALUE) {
