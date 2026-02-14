@@ -18,7 +18,6 @@ class TriggerInput {
     void setIdle();
     void startScanMode();
     void startRampMode();
-    void emitHit();
     void handleIdleMode(int rawInputValue);
     void handleScanMode(int rawInputValue);
     void handleRampMode(int rawInputValue);

@@ -1,4 +1,5 @@
 #include "trigger_input.h"
+#include "comms.h"
 #include "config.h"
 
 #include <Arduino.h>
@@ -50,17 +51,13 @@ void TriggerInput::startScanMode() {
 
 void TriggerInput::handleScanMode(int rawInputValue) {
     if (micros() - this->modeStartTime >= this->scanModeDuration) {
-        this->emitHit();
+        Comms::sendHit(this->inputPin, this->maxScanModeValue);
         this->startRampMode();
         return;
     }
     if (rawInputValue > this->maxScanModeValue) {
         this->maxScanModeValue = rawInputValue;
     }
-}
-
-void TriggerInput::emitHit() {
-    // TODO: Send hit to Raspberry Pi
 }
 
 void TriggerInput::startRampMode() {
