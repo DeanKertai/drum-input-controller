@@ -13,17 +13,20 @@ class TriggerInput {
     TriggerMode mode;
 
     int threshold;
-    unsigned long scanModeDuration; ///< Microsends
-    unsigned long rampModeDuration; ///< Microsends
+    unsigned long scanModeDuration;  ///< Microsends
+    unsigned long blockModeDuration; ///< Microsends
+    unsigned long rampModeDuration;  ///< Microsends
 
     unsigned long modeStartTime; ///< Timestamp from micros()
     int maxScanModeValue;
 
     void setIdle();
     void startScanMode();
+    void startBlockMode();
     void startRampMode();
     void handleIdleMode(int rawInputValue);
     void handleScanMode(int rawInputValue);
+    void handleBlockMode();
     void handleRampMode(int rawInputValue);
 
   public:
@@ -45,6 +48,11 @@ class TriggerInput {
     /// @param duration Microsends
     /// @return true if setting the duration was successful
     bool setScanModeDuration(unsigned long duration);
+
+    /// @brief Sets the block mode duration for this pin
+    /// @param duration Microsends
+    /// @return true if setting the duration was successful
+    bool setBlockModeDuration(unsigned long duration);
 
     /// @brief Sets the ramp mode duration for this pin
     /// @param duration Microsends

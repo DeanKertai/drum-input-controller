@@ -10,6 +10,7 @@ TriggerInput::TriggerInput(uint8_t id, int inputPin) {
     this->mode = TriggerMode::Idle;
     this->threshold = 10;
     this->scanModeDuration = 25000;
+    this->blockModeDuration = 25000;
     this->rampModeDuration = 300000;
     this->maxScanModeValue = 0;
     this->modeStartTime = 0;
@@ -25,6 +26,10 @@ void TriggerInput::runChecks() {
 
     case TriggerMode::Scan:
         this->handleScanMode(rawInputValue);
+        break;
+
+    case TriggerMode::Block:
+        this->handleBlockMode();
         break;
 
     case TriggerMode::Ramp:
@@ -56,11 +61,27 @@ void TriggerInput::startScanMode() {
 void TriggerInput::handleScanMode(int rawInputValue) {
     if (micros() - this->modeStartTime >= this->scanModeDuration) {
         Comms::sendHit(this->id, this->maxScanModeValue);
-        this->startRampMode();
+        this->startBlockMode();
         return;
     }
     if (rawInputValue > this->maxScanModeValue) {
         this->maxScanModeValue = rawInputValue;
+    }
+}
+
+void TriggerInput::startBlockMode() {
+    if (this->blockModeDuration == 0) {
+        this->startRampMode();
+        return;
+    }
+    this->modeStartTime = micros();
+    this->mode = TriggerMode::Block;
+}
+
+void TriggerInput::handleBlockMode() {
+    if (micros() - this->modeStartTime >= this->blockModeDuration) {
+        this->startRampMode();
+        return;
     }
 }
 
@@ -102,6 +123,14 @@ bool TriggerInput::setScanModeDuration(unsigned long duration) {
         return false;
     }
     this->scanModeDuration = duration;
+    return true;
+}
+
+bool TriggerInput::setBlockModeDuration(unsigned long duration) {
+    if (duration > Config::MAX_MODE_DURATION) {
+        return false;
+    }
+    this->blockModeDuration = duration;
     return true;
 }
 

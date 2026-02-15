@@ -9,7 +9,11 @@ enum class TriggerMode {
     /// determine the velocity and frequency
     Scan,
 
-    /// Ramp mode starts after scan mode. During ramp mode, a dynamic
+    /// During block mode, any inputs on this pin are
+    /// ignored, regardless of their value
+    Block,
+
+    /// Ramp mode starts after block mode. During ramp mode, a dynamic
     /// threshold reduces from the max input value during scan mode to
     /// the original `threshold` value. Any input values below this
     /// dynamic threshold are ignored. Any values above the dynamic
