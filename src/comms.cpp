@@ -2,12 +2,12 @@
 #include "config.h"
 #include <Arduino.h>
 
-void Comms::init() { Serial.begin(9600); }
+void Comms::init() { Serial.begin(115200); }
 
-void Comms::sendHit(int drum, int velocity) {
+void Comms::sendHit(uint8_t drumId, int velocity) {
     Serial.print("hit ");
-    Serial.print(drum);
-    Serial.print(" ");
+    Serial.print(drumId);
+    Serial.print(",");
     Serial.println(velocity);
 }
 

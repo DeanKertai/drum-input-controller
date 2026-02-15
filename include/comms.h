@@ -9,7 +9,7 @@ enum MessageId {
 };
 
 void init();
-void sendHit(int drum, int velocity);
+void sendHit(uint8_t drumId, int velocity);
 void sendWaveform(int count, byte *waveform, unsigned long *timestamps);
 
 }; // namespace Comms
