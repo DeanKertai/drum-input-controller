@@ -4,8 +4,9 @@
 
 #include <Arduino.h>
 
-TriggerInput::TriggerInput(int inputPin) {
+TriggerInput::TriggerInput(int inputPin, WaveformAnalyzer *waveformAnalyzer) {
     this->inputPin = inputPin;
+    this->waveformAnalyzer = waveformAnalyzer;
     this->mode = TriggerMode::Idle;
     this->threshold = 10;
     this->scanModeDuration = 50000;
@@ -30,6 +31,8 @@ void TriggerInput::runChecks() {
         this->handleRampMode(rawInputValue);
         break;
     }
+
+    this->waveformAnalyzer->update(this->inputPin, rawInputValue);
 }
 
 void TriggerInput::setIdle() {
@@ -47,6 +50,7 @@ void TriggerInput::startScanMode() {
     this->mode = TriggerMode::Scan;
     this->modeStartTime = micros();
     this->maxScanModeValue = 0;
+    this->waveformAnalyzer->start(this->inputPin);
 }
 
 void TriggerInput::handleScanMode(int rawInputValue) {

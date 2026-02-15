@@ -1,5 +1,4 @@
-#ifndef TRIGGER_MODE_H
-#define TRIGGER_MODE_H
+#pragma once
 
 enum class TriggerMode {
     /// Waiting for `threshold` value to be exceeded on this pin
@@ -17,5 +16,3 @@ enum class TriggerMode {
     /// threshold will trigger a new hit and restart scan mode
     Ramp,
 };
-
-#endif

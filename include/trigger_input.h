@@ -1,12 +1,13 @@
-#ifndef TRIGGER_INPUT_H
-#define TRIGGER_INPUT_H
+#pragma once
 
 #include "trigger_mode.h"
+#include "waveform.h"
 
 class TriggerInput {
   private:
     int inputPin;
     TriggerMode mode;
+    WaveformAnalyzer *waveformAnalyzer;
 
     int threshold;
     unsigned long scanModeDuration; ///< Microsends
@@ -25,7 +26,7 @@ class TriggerInput {
   public:
     /// @brief Constructor
     /// @param inputPin Arduino pin ID (ie: A0)
-    TriggerInput(int inputPin);
+    TriggerInput(int inputPin, WaveformAnalyzer *waveformAnalyzer);
 
     /// @brief Reads the value from the input pin and performs actions
     /// according to the input's current mode
@@ -46,5 +47,3 @@ class TriggerInput {
     /// @return true if setting the duration was successful
     bool setRampModeDuration(unsigned long duration);
 };
-
-#endif
