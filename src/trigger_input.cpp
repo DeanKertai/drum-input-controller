@@ -4,13 +4,13 @@
 
 #include <Arduino.h>
 
-TriggerInput::TriggerInput(int inputPin, WaveformAnalyzer *waveformAnalyzer) {
+TriggerInput::TriggerInput(uint8_t id, int inputPin) {
+    this->id = id;
     this->inputPin = inputPin;
-    this->waveformAnalyzer = waveformAnalyzer;
     this->mode = TriggerMode::Idle;
     this->threshold = 10;
-    this->scanModeDuration = 50000;
-    this->rampModeDuration = 200000;
+    this->scanModeDuration = 25000;
+    this->rampModeDuration = 300000;
     this->maxScanModeValue = 0;
     this->modeStartTime = 0;
 }
@@ -32,7 +32,7 @@ void TriggerInput::runChecks() {
         break;
     }
 
-    this->waveformAnalyzer->update(this->inputPin, rawInputValue);
+    WaveformAnalyzer::update(this->inputPin, rawInputValue);
 }
 
 void TriggerInput::setIdle() {
@@ -50,12 +50,12 @@ void TriggerInput::startScanMode() {
     this->mode = TriggerMode::Scan;
     this->modeStartTime = micros();
     this->maxScanModeValue = 0;
-    this->waveformAnalyzer->start(this->inputPin);
+    WaveformAnalyzer::start(this->inputPin);
 }
 
 void TriggerInput::handleScanMode(int rawInputValue) {
     if (micros() - this->modeStartTime >= this->scanModeDuration) {
-        Comms::sendHit(this->inputPin, this->maxScanModeValue);
+        Comms::sendHit(this->id, this->maxScanModeValue);
         this->startRampMode();
         return;
     }

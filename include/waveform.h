@@ -2,25 +2,25 @@
 #include "config.h"
 #include <Arduino.h>
 
-class WaveformAnalyzer {
-  private:
-    byte waveform[Config::MAX_WAVEFORM_POINTS];
-    unsigned long timestamps[Config::MAX_WAVEFORM_POINTS]; ///< timestamp for each waveform point
+namespace WaveformAnalyzer {
 
-    int currentIndex;
-    bool analysisRunning;
-    int currentPin;          ///< Input pin that we're currently running waveform analysis on
-    unsigned long startTime; ///< When waveform analysis started (micros() timestamp)
+extern bool enabled;
 
-    int lastValue;
-    bool isRising;
-    bool isFalling;
+extern byte waveform[Config::MAX_WAVEFORM_POINTS];
+extern unsigned long timestamps[Config::MAX_WAVEFORM_POINTS]; ///< timestamp for each waveform point
 
-    void sendWaveform();
+extern int currentIndex;
+extern bool analysisRunning;
+extern int currentPin;          ///< Input pin that we're currently running waveform analysis on
+extern unsigned long startTime; ///< When waveform analysis started (micros() timestamp)
 
-  public:
-    WaveformAnalyzer();
-    void start(int inputPin);
-    void stop();
-    void update(int inputPin, int value);
-};
+extern int lastValue;
+extern bool isRising;
+extern bool isFalling;
+
+void setEnabled(bool enabled);
+void start(int inputPin);
+void stop();
+void update(int inputPin, int value);
+void sendWaveform();
+}; // namespace WaveformAnalyzer

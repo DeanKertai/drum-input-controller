@@ -3,9 +3,8 @@
 #include "waveform.h"
 #include <Arduino.h>
 
-WaveformAnalyzer waveformAnalyzer = WaveformAnalyzer();
 TriggerInput inputs[] = {
-    TriggerInput(A0, &waveformAnalyzer),
+    TriggerInput(0, A0),
 };
 
 void setup() { Comms::init(); }

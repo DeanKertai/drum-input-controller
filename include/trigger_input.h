@@ -4,10 +4,13 @@
 #include "waveform.h"
 
 class TriggerInput {
+  protected:
+    /// Internal ID for this drum. Used when sending hits to user software
+    uint8_t id;
+
   private:
     int inputPin;
     TriggerMode mode;
-    WaveformAnalyzer *waveformAnalyzer;
 
     int threshold;
     unsigned long scanModeDuration; ///< Microsends
@@ -25,8 +28,9 @@ class TriggerInput {
 
   public:
     /// @brief Constructor
+    /// @param id Trigger ID (used when sending hits to user software)
     /// @param inputPin Arduino pin ID (ie: A0)
-    TriggerInput(int inputPin, WaveformAnalyzer *waveformAnalyzer);
+    TriggerInput(uint8_t id, int inputPin);
 
     /// @brief Reads the value from the input pin and performs actions
     /// according to the input's current mode
