@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 TriggerInput inputs[] = {
-    TriggerInput(0, A0),
+    TriggerInput(0, A5),
 };
 
 void setup() {

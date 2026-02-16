@@ -14,9 +14,9 @@ void Comms::sendHit(uint8_t drumId, int velocity) {
 void Comms::sendWaveform(int count, byte *waveform, unsigned long *timestamps) {
     Serial.println("waveform");
     for (int i = 0; i < count; i++) {
-        Serial.print(waveform[i]);
+        Serial.print(timestamps[i]);
         Serial.print(",");
-        Serial.println(timestamps[i]);
+        Serial.println(waveform[i]);
     }
     Serial.println("end");
 }

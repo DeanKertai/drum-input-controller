@@ -8,10 +8,10 @@ TriggerInput::TriggerInput(uint8_t id, int inputPin) {
     this->id = id;
     this->inputPin = inputPin;
     this->mode = TriggerMode::Idle;
-    this->threshold = 10;
+    this->threshold = 8;
     this->scanModeDuration = 10000;
-    this->blockModeDuration = 10000;
-    this->rampModeDuration = 350000;
+    this->blockModeDuration = 5000;
+    this->rampModeDuration = 220000;
     this->maxScanModeValue = 0;
     this->modeStartTime = 0;
 }
