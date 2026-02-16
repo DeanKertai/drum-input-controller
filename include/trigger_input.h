@@ -21,7 +21,7 @@ class TriggerInput {
     int maxScanModeValue;
 
     void setIdle();
-    void startScanMode();
+    void startScanMode(int rawInputValue);
     void startBlockMode();
     void startRampMode();
     void handleIdleMode(int rawInputValue);

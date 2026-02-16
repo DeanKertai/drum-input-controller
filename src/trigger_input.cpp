@@ -9,9 +9,9 @@ TriggerInput::TriggerInput(uint8_t id, int inputPin) {
     this->inputPin = inputPin;
     this->mode = TriggerMode::Idle;
     this->threshold = 10;
-    this->scanModeDuration = 25000;
-    this->blockModeDuration = 25000;
-    this->rampModeDuration = 300000;
+    this->scanModeDuration = 10000;
+    this->blockModeDuration = 10000;
+    this->rampModeDuration = 350000;
     this->maxScanModeValue = 0;
     this->modeStartTime = 0;
 }
@@ -47,14 +47,14 @@ void TriggerInput::setIdle() {
 
 void TriggerInput::handleIdleMode(int rawInputValue) {
     if (rawInputValue > this->threshold) {
-        this->startScanMode();
+        this->startScanMode(rawInputValue);
     }
 }
 
-void TriggerInput::startScanMode() {
+void TriggerInput::startScanMode(int rawInputValue) {
     this->mode = TriggerMode::Scan;
     this->modeStartTime = micros();
-    this->maxScanModeValue = 0;
+    this->maxScanModeValue = rawInputValue;
     WaveformAnalyzer::start(this->inputPin);
 }
 
@@ -106,7 +106,7 @@ void TriggerInput::handleRampMode(int rawInputValue) {
 
     // Allow new hits if input value exceeds the dynamic ramp threshold
     if (rawInputValue >= dynamicThreshold) {
-        this->startScanMode();
+        this->startScanMode(rawInputValue);
     }
 }
 
