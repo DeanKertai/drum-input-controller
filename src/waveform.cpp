@@ -3,13 +3,17 @@
 #include <Arduino.h>
 
 bool WaveformAnalyzer::enabled = false;
+
 byte WaveformAnalyzer::waveform[Config::MAX_WAVEFORM_POINTS];
 unsigned long WaveformAnalyzer::timestamps[Config::MAX_WAVEFORM_POINTS];
+
 int WaveformAnalyzer::currentIndex;
 bool WaveformAnalyzer::analysisRunning = false;
 int WaveformAnalyzer::currentPin;
 unsigned long WaveformAnalyzer::startTime;
-int WaveformAnalyzer::lastValue = -1;
+
+int WaveformAnalyzer::lastValue = 0;
+bool WaveformAnalyzer::isFlat = false;
 bool WaveformAnalyzer::isRising = false;
 bool WaveformAnalyzer::isFalling = false;
 
@@ -23,6 +27,7 @@ void WaveformAnalyzer::start(int inputPin) {
     currentPin = inputPin;
     currentIndex = 0;
     startTime = micros();
+    isFlat = false;
     isRising = false;
     isFalling = false;
     lastValue = -1;
@@ -35,7 +40,8 @@ void WaveformAnalyzer::update(int inputPin, int value) {
         return;
     }
 
-    unsigned long runningDuration = micros() - startTime;
+    unsigned long now = micros();
+    unsigned long runningDuration = now - startTime;
 
     if (currentIndex >= Config::MAX_WAVEFORM_POINTS ||
         runningDuration > Config::MAX_WAVEFORM_DURATION) {
@@ -44,24 +50,14 @@ void WaveformAnalyzer::update(int inputPin, int value) {
         return;
     }
 
-    // If this is the first point, record it (don't know if it's rising or falling at this point)
-    if (currentIndex == 0) {
-        waveform[currentIndex] = (byte)(value >> 2);
-        timestamps[currentIndex] = micros() - startTime;
-        currentIndex++;
-    }
+    bool isFirstPoint = currentIndex == 0;
+    bool wasFlat = isFlat && value != lastValue;
+    bool wasRising = isRising && value <= lastValue;
+    bool wasFalling = isFalling && value >= lastValue;
 
-    // If we were rising, and the new value is lower than the previous value, record a peak
-    if (isRising && value < lastValue) {
+    if (isFirstPoint || wasFlat || wasRising || wasFalling) {
         waveform[currentIndex] = (byte)(value >> 2);
-        timestamps[currentIndex] = micros() - startTime;
-        currentIndex++;
-    }
-
-    // If we were falling, and the new value is higher than the previous value, record a valley
-    if (isFalling && value > lastValue) {
-        waveform[currentIndex] = (byte)(value >> 2);
-        timestamps[currentIndex] = micros() - startTime;
+        timestamps[currentIndex] = now - startTime;
         currentIndex++;
     }
 

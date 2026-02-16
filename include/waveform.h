@@ -15,6 +15,8 @@ extern int currentPin;          ///< Input pin that we're currently running wave
 extern unsigned long startTime; ///< When waveform analysis started (micros() timestamp)
 
 extern int lastValue;
+
+extern bool isFlat;
 extern bool isRising;
 extern bool isFalling;
 
